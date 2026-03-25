@@ -1,4 +1,5 @@
-﻿using InfluencerBackendAPI.Data;
+﻿using InfluencerAPI.Repositories;
+using InfluencerBackendAPI.Data;
 using InfluencerBackendAPI.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // -------------------- DEPENDENCY INJECTION --------------------
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 
 // -------------------- JWT AUTH --------------------
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
