@@ -83,12 +83,34 @@ namespace InfluencerBackendAPI.Controllers
                     signingCredentials: creds
                 );
 
+                //var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
+
+                //_logger.LogInformation("JWT token generated successfully for UserId: {UserId}", user.Id);
+
+                //return Ok(new
+                //{
+                //    token = tokenValue,
+                //    userId = user.Id,
+                //    userName = user.UserName,
+                //    userType = user.UserTypeName
+                //});
+
                 var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
 
-                _logger.LogInformation("JWT token generated successfully for UserId: {UserId}", user.Id);
+                // 🔥 STORE TOKEN IN COOKIE
+                Response.Cookies.Append("AuthToken", tokenValue, new CookieOptions
+                {
+                    HttpOnly = true,
+                    //Secure = false, // true in production (HTTPS)
+                    Secure = true,
+                    //SameSite = SameSiteMode.Strict,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddMinutes(expiryMinutes)
+                });
 
                 return Ok(new
                 {
+                    message = "Login successful",
                     token = tokenValue,
                     userId = user.Id,
                     userName = user.UserName,
@@ -155,6 +177,13 @@ namespace InfluencerBackendAPI.Controllers
                 _logger.LogError(ex, "Error occurred during registration for Email: {Email}", request?.Email);
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        [HttpPost("Logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("AuthToken");
+            return Ok("Logged out successfully");
         }
     }
 }
