@@ -68,7 +68,12 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
     {
         // policy.AllowAnyOrigin()
-        policy.WithOrigins("http://localhost:8100")
+        policy.WithOrigins(
+            "http://localhost:8100",
+            "capacitor://localhost",
+            "http://localhost",
+            "https://localhost"
+        )
                .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
