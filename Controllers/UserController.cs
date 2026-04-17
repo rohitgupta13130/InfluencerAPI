@@ -179,6 +179,29 @@ namespace InfluencerBackendAPI.Controllers
             }
         }
 
+        [HttpGet("GetAllUsers")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            _logger.LogInformation("GetAllUsers API called");
+
+            try
+            {
+                var users = await _repository.GetAllUsers();
+
+                if (users == null || users.Count == 0)
+                {
+                    return NotFound("No users found");
+                }
+
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetAllUsers API");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [HttpPost("Logout")]
         public IActionResult Logout()
         {

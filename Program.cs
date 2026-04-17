@@ -24,6 +24,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // -------------------- DEPENDENCY INJECTION --------------------
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
 
 // -------------------- JWT AUTH --------------------
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
