@@ -1,4 +1,5 @@
 ﻿using InfluencerBackendAPI.Dtos;
+using InfluencerBackendAPI.Models;
 using InfluencerBackendAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -50,6 +51,7 @@ namespace InfluencerBackendAPI.Controllers
                     return Unauthorized("Invalid username or password");
                 }
 
+                await _repository.UpdateUserStatus(user.Id, true);
                 _logger.LogInformation("User authenticated successfully. UserId: {UserId}", user.Id);
 
                 var claims = new[]
@@ -58,7 +60,8 @@ namespace InfluencerBackendAPI.Controllers
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim("UserId", user.Id.ToString()),
                     new Claim("UserName", user.UserName),
-                    new Claim("UserType", user.UserTypeName ?? "")
+                    new Claim("UserType", user.UserTypeName ?? ""),
+                    new Claim("FullName", user.FullName ?? "")
                 };
 
                 var keyString = _config["Jwt:Key"];
@@ -83,12 +86,34 @@ namespace InfluencerBackendAPI.Controllers
                     signingCredentials: creds
                 );
 
+                //var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
+
+                //_logger.LogInformation("JWT token generated successfully for UserId: {UserId}", user.Id);
+
+                //return Ok(new
+                //{
+                //    token = tokenValue,
+                //    userId = user.Id,
+                //    userName = user.UserName,
+                //    userType = user.UserTypeName
+                //});
+
                 var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
 
-                _logger.LogInformation("JWT token generated successfully for UserId: {UserId}", user.Id);
+                // 🔥 STORE TOKEN IN COOKIE
+                Response.Cookies.Append("AuthToken", tokenValue, new CookieOptions
+                {
+                    HttpOnly = true,
+                    //Secure = false, // true in production (HTTPS)
+                    Secure = true,
+                    //SameSite = SameSiteMode.Strict,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddMinutes(expiryMinutes)
+                });
 
                 return Ok(new
                 {
+                    message = "Login successful",
                     token = tokenValue,
                     userId = user.Id,
                     userName = user.UserName,
@@ -155,6 +180,37 @@ namespace InfluencerBackendAPI.Controllers
                 _logger.LogError(ex, "Error occurred during registration for Email: {Email}", request?.Email);
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        [HttpGet("GetAllUsers")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            _logger.LogInformation("GetAllUsers API called");
+
+            try
+            {
+                var users = await _repository.GetAllUsers();
+
+                if (users == null || users.Count == 0)
+                {
+                    return NotFound("No users found");
+                }
+
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetAllUsers API");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPost("Logout")]
+        public async Task<IActionResult> Logout([FromQuery] int userId)
+        {
+            await _repository.UpdateUserStatus(userId, false);
+            Response.Cookies.Delete("AuthToken");
+            return Ok("Logged out successfully");
         }
     }
 }
