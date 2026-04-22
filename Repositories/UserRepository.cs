@@ -55,7 +55,8 @@ namespace InfluencerBackendAPI.Repositories
                                 Id = Convert.ToInt32(reader["Id"]),
                                 UserName = reader["UserName"]?.ToString(),
                                 Email = reader["Email"]?.ToString(),
-                                UserTypeName = reader["UserTypeName"]?.ToString()
+                                UserTypeName = reader["UserTypeName"]?.ToString(),
+                                FullName = reader["FullName"]?.ToString()
                             };
                         }
                         else
@@ -181,7 +182,9 @@ namespace InfluencerBackendAPI.Repositories
                                 UserName = reader["UserName"]?.ToString(),
                                 Email = reader["Email"]?.ToString(),
                                 FullName = reader["FullName"]?.ToString(), // ✅ ADD THIS LINE
-                                UserTypeName = reader["UserTypeName"]?.ToString()
+                                UserTypeName = reader["UserTypeName"]?.ToString(),
+                                IsOnline = Convert.ToBoolean(reader["IsOnline"]),   // ✅ ADD
+                                LastSeen = reader["LastSeen"] as DateTime?          // ✅ ADD
                             });
                         }
                     }
@@ -193,6 +196,42 @@ namespace InfluencerBackendAPI.Repositories
             {
                 _logger.LogError(ex, "Error in GetAllUsers");
                 return new List<User>();
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    await connection.CloseAsync();
+                }
+            }
+        }
+
+
+        public async Task UpdateUserStatus(int userId, bool isOnline)
+        {
+            var connection = _context.Database.GetDbConnection();
+
+            try
+            {
+                if (connection.State != ConnectionState.Open)
+                {
+                    await connection.OpenAsync();
+                }
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "influencer.UpdateUserStatus";
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.Add(new SqlParameter("@UserId", userId));
+                    command.Parameters.Add(new SqlParameter("@IsOnline", isOnline));
+
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating user status");
             }
             finally
             {

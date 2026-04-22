@@ -1,4 +1,5 @@
 ﻿using InfluencerBackendAPI.Dtos;
+using InfluencerBackendAPI.Models;
 using InfluencerBackendAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -50,6 +51,7 @@ namespace InfluencerBackendAPI.Controllers
                     return Unauthorized("Invalid username or password");
                 }
 
+                await _repository.UpdateUserStatus(user.Id, true);
                 _logger.LogInformation("User authenticated successfully. UserId: {UserId}", user.Id);
 
                 var claims = new[]
@@ -58,7 +60,8 @@ namespace InfluencerBackendAPI.Controllers
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim("UserId", user.Id.ToString()),
                     new Claim("UserName", user.UserName),
-                    new Claim("UserType", user.UserTypeName ?? "")
+                    new Claim("UserType", user.UserTypeName ?? ""),
+                    new Claim("FullName", user.FullName ?? "")
                 };
 
                 var keyString = _config["Jwt:Key"];
@@ -203,8 +206,9 @@ namespace InfluencerBackendAPI.Controllers
         }
 
         [HttpPost("Logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout([FromQuery] int userId)
         {
+            await _repository.UpdateUserStatus(userId, false);
             Response.Cookies.Delete("AuthToken");
             return Ok("Logged out successfully");
         }

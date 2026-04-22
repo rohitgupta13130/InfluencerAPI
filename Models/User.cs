@@ -15,5 +15,8 @@
         public string UserTypeName { get; set; }
 
         public int UserTypeId { get; set; }
+
+        public DateTime? LastSeen { get; set; }
+        public bool IsOnline { get; set; }
     }
 }
