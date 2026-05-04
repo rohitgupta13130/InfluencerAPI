@@ -9,18 +9,29 @@ namespace InfluencerBackendAPI.Models
         [Key]
         public int Id { get; set; }
 
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "SenderId must be greater than 0")]
         public int SenderId { get; set; }
 
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "ReceiverId must be greater than 0")]
         public int ReceiverId { get; set; }
 
+        [Required(ErrorMessage = "Message is required")]
+        [StringLength(500, ErrorMessage = "Message cannot exceed 500 characters")]
         public string Message { get; set; }
 
-        public DateTime SentAt { get; set; }
+        [Required]
+        public DateTime SentAt { get; set; } = DateTime.UtcNow; // ✅ default
 
-        public bool IsRead { get; set; }
+        [Required]
+        public bool IsRead { get; set; } = false; // ✅ default
 
-        // 🔹 Navigation Properties (optional but good)
+        // 🔹 Foreign Keys
+        [ForeignKey("SenderId")]
         public User Sender { get; set; }
+
+        [ForeignKey("ReceiverId")]
         public User Receiver { get; set; }
     }
 }

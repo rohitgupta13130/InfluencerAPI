@@ -1,13 +1,31 @@
-﻿namespace InfluencerAPI.Dtos
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace InfluencerAPI.Dtos
 {
     public class DashboardRequest
     {
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Id must be greater than 0")]
         public int Id { get; set; }
-        public int UserId { get; set; }
-        public decimal Earning { get; set; }
-        public int Followers { get; set; }
-        public string Campaign { get; set; }
-        public string Engagement { get; set; }
 
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "UserId must be greater than 0")]
+        public int UserId { get; set; }
+
+        [Required]
+        [Range(0, double.MaxValue, ErrorMessage = "Earning cannot be negative")]
+        public decimal Earning { get; set; }
+
+        [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Followers cannot be negative")]
+        public int Followers { get; set; }
+
+        [Required(ErrorMessage = "Campaign is required")]
+        [StringLength(100, ErrorMessage = "Campaign cannot exceed 100 characters")]
+        public string Campaign { get; set; }
+
+        [Required(ErrorMessage = "Engagement is required")]
+        [StringLength(50, ErrorMessage = "Engagement cannot exceed 50 characters")]
+        public string Engagement { get; set; }
     }
 }

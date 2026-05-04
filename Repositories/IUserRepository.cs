@@ -9,5 +9,6 @@ namespace InfluencerBackendAPI.Repositories
         Task<int> RegisterUser(RegisterRequest request);
         Task<List<User>> GetAllUsers();
         Task UpdateUserStatus(int userId, bool isOnline);
+         Task<User> GetUserById(int userId);
     }
 }
