@@ -66,10 +66,14 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
     {
         policy.WithOrigins(
-            "http://localhost:8100",
-            "capacitor://localhost",
             "http://localhost",
-            "https://localhost"
+            "https://localhost",
+            "capacitor://localhost",
+            "http://192.168.1.6",
+            "http://192.168.1.6:8100",
+            "http://10.0.2.2",
+            "http://localhost:8100",
+            "http://localhost:4200"
         )
         .AllowAnyHeader()
         .AllowAnyMethod()

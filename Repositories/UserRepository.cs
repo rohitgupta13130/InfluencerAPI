@@ -182,7 +182,7 @@ namespace InfluencerBackendAPI.Repositories
 
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "influencer.GetAllUsers";
+                    command.CommandText = "influencer.GetUsers";
                     command.CommandType = CommandType.StoredProcedure;
 
                     using (var reader = await command.ExecuteReaderAsync())
@@ -197,7 +197,8 @@ namespace InfluencerBackendAPI.Repositories
                                 FullName = reader["FullName"]?.ToString(), // ✅ ADD THIS LINE
                                 UserTypeName = reader["UserTypeName"]?.ToString(),
                                 IsOnline = Convert.ToBoolean(reader["IsOnline"]),   // ✅ ADD
-                                LastSeen = reader["LastSeen"] as DateTime?          // ✅ ADD
+                                LastSeen = reader["LastSeen"] as DateTime?,      // ✅ ADD
+                                ProfileImage = reader["ProfileImage"]?.ToString()
                             });
                         }
                     }
@@ -207,7 +208,7 @@ namespace InfluencerBackendAPI.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in GetAllUsers");
+                _logger.LogError(ex, "Error in GetUsers");
                 return new List<User>();
             }
             finally
@@ -271,7 +272,7 @@ namespace InfluencerBackendAPI.Repositories
 
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "influencer.GetUserById";
+                    command.CommandText = "influencer.GetUsers";
                     command.CommandType = CommandType.StoredProcedure;
 
                     command.Parameters.Add(new SqlParameter("@UserId", userId));
@@ -288,7 +289,8 @@ namespace InfluencerBackendAPI.Repositories
                                 FullName = reader["FullName"]?.ToString(),
                                 UserTypeName = reader["UserTypeName"]?.ToString(),
                                 IsOnline = Convert.ToBoolean(reader["IsOnline"]),
-                                LastSeen = reader["LastSeen"] as DateTime?
+                                LastSeen = reader["LastSeen"] as DateTime?,
+                                ProfileImage = reader["ProfileImage"]?.ToString()
                             };
                         }
                     }
