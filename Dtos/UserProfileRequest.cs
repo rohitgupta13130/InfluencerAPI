@@ -28,6 +28,6 @@ namespace InfluencerAPI.Dtos
 
         [Required]
         public bool IsOnline { get; set; }
-        public string ProfileImage { get; set; }
+        public string? ProfileImage { get; set; }
     }
 }

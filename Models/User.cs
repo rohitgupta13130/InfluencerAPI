@@ -39,6 +39,6 @@ namespace InfluencerBackendAPI.Models
         [Required]
         public bool IsOnline { get; set; } = false;
 
-        public string ProfileImage { get; set; }
+        public string? ProfileImage { get; set; }
     }
 }

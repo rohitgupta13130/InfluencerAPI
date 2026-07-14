@@ -27,7 +27,7 @@ namespace InfluencerBackendAPI.Dtos
         public int UserTypeId { get; set; }
 
         // ✅ FILE VALIDATION (basic)
-        [Required(ErrorMessage = "Profile image is required")]
-        public IFormFile ProfileImage { get; set; }
+      
+        public IFormFile? ProfileImage { get; set; }
     }
 }
