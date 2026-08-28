@@ -10,5 +10,7 @@ namespace InfluencerBackendAPI.Data
         public DbSet<User> Users { get; set; }
 
         public DbSet<UserType> UserTypes { get; set; }
+
+        public DbSet<ChatMessage> ChatMessages { get; set; }
     }
 }
